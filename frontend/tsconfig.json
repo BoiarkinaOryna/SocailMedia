@@ -1,0 +1,18 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "jsx": "react-native",
+    "strict": true,
+    "paths": {
+      "@shared/*": ["./src/shared/*"],
+      "@assets/*": ["./assets"],
+      "@modules/*": ["./src/modules/*"]
+    }
+  },
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".expo/types/**/*.ts",
+    "expo-env.d.ts"
+, "src/app/chats/index.tsx"  ]
+}
