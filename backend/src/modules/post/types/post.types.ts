@@ -7,7 +7,8 @@ export type PostCredentials = {
     topic?: string,
     content: string,
     links?: string[],
-    image?: string
+    image?: string,
+    images?: string[]
 }
 
 export type PostImageCredentials = {

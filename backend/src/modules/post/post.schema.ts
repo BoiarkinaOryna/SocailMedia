@@ -8,6 +8,7 @@ export const postSchema = yup.object({
     content: yup
         .string()
         .required("Content is required"),
-    links: yup.array().of(yup.string()),
-    image: yup.string()
+    links: yup.array().of(yup.string().max(200, "Link must be 200 characters or less")),
+    image: yup.string(),
+    images: yup.array().of(yup.string())
 })

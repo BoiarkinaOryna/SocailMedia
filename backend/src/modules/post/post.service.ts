@@ -9,8 +9,8 @@ export const PostService: PostServiceContracts = {
     addImage: async function (data) {
         return await PostRepository.addImage(data)
     },
-    getAll: async function (take, page) {
-        return await PostRepository.getAll(take, page)
+    getAll: async function (currentUserId, take, page) {
+        return await PostRepository.getAll(currentUserId, take, page)
     },
     getMy: async function (id, take, page) {
         return await PostRepository.getMy(id, take, page)

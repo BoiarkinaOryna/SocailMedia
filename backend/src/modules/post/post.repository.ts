@@ -6,6 +6,7 @@ import { PostRepositoryContracts } from "./types/post.contracts";
 export const PostRepository: PostRepositoryContracts = {
     create: async function (id, data) {
         try {
+            const links = (data.links ?? []).map((link) => link.trim()).filter(Boolean)
             const post = await PRISMA_CLIENT.post_app_post.create({
                 data: {
                     author_id: id,
@@ -15,15 +16,16 @@ export const PostRepository: PostRepositoryContracts = {
                     created_at: new Date()
                 }
             })
-            for (const link of data.links ?? []){
+
+            for (const link of links){
                 await PRISMA_CLIENT.post_app_postlink.create({
                     data:{
                         post_id: post.id,
                         url: link
                     }
                 })
-
             }
+
             return post
         } catch (error){
             if (error instanceof Error) {
@@ -48,11 +50,19 @@ export const PostRepository: PostRepositoryContracts = {
             throw new InternalServerError();
         }
     },
-    getAll: async function (take, page){
+    getAll: async function (currentUserId, take, page){
         try{
             const posts = await PRISMA_CLIENT.post_app_post.findMany({
-               skip: take * (page - 1),
+                    where: {
+                        author_id: {
+                            not: currentUserId,
+                        },
+                    },
+                    skip: take * (page - 1),
                     take,
+                    orderBy: {
+                        created_at: "desc",
+                    },
                     include: {
                         post_app_postimage: true,
                         post_app_postlink: true,
@@ -75,8 +85,11 @@ export const PostRepository: PostRepositoryContracts = {
         try{
             const posts = await PRISMA_CLIENT.post_app_post.findMany({
                 where: { author_id: id },
-                skip: (take - take * page),
+                skip: take * (page - 1),
                 take,
+                orderBy: {
+                    created_at: "desc",
+                },
                 include: {
                     post_app_postimage: true,
                     post_app_postlink: true,

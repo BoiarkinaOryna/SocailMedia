@@ -33,7 +33,7 @@ export interface PostControllerContracts {
 export interface PostServiceContracts {
     create: (id: number, data: PostCredentials) => Promise<any>,
     addImage: (data: PostImageCredentials) => Promise<any>,
-    getAll: (take: number, page: number) => Promise<Post[]>,
+    getAll: (currentUserId: number, take: number, page: number) => Promise<Post[]>,
     getMy: (id: number, take: number, page: number) => Promise<Post[]>,
     delete: (id: number) => Promise<any>
 }
@@ -41,7 +41,7 @@ export interface PostServiceContracts {
 export interface PostRepositoryContracts {
     create: (id: number, data: PostCredentials) => Promise<any>,
     addImage: (data: PostImageCredentials) => Promise<any>,
-    getAll: (take: number, page: number) => Promise<Post[]>,
+    getAll: (currentUserId: number, take: number, page: number) => Promise<Post[]>,
     getMy: (id: number, take: number, page: number) => Promise<Post[]>,
     delete: (id: number) => Promise<any>
 }
