@@ -4,38 +4,66 @@ import { ChatWithChatParticipantsDto } from "../types/chat.types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type NotificationContextData = {
-  personalChatNotificationsQ: number;
-  groupChatNotificationsQ: number;
+  personalChatNotifications: string;
+  groupChatNotifications: string;
 
-  increasePersonal: () => Promise<void>;
-  increaseGroup: () => Promise<void>;
+  increasePersonal: (chatId: number) => Promise<void>;
+  increaseGroup: (chatId: number) => Promise<void>;
+  decreasePersonal: (chatId: number) => Promise<void>;
+  decreaseGroup: (chatId: number) => Promise<void>;
 };
 
 const NotificationContext = createContext<NotificationContextData | null>(null);
 
 export function NotificationProvider({ children }: PropsWithChildren) {
-  const [personalChatNotificationsQ, setPersonalChatNotificationsQ] = useState(0);
-  const [groupChatNotificationsQ, setGroupChatNotificationsQ] = useState(0);
+  const [personalChatNotifications, setPersonalChatNotifications] = useState("");
+  const [groupChatNotifications, setGroupChatNotifications] = useState("");
 
-  async function increasePersonal() {
+  async function increasePersonal(chatId: number) {
     console.log("p notif is set")
-    setPersonalChatNotificationsQ((prev) => {
-      const next = prev + 1;
-
-      AsyncStorage.setItem("personalNotifQ", String(next));
-
-      return next;
+    setPersonalChatNotifications((prev) => {
+      const idsString = prev != ""
+        ? prev + " " + String(chatId)
+        : String(chatId)
+        
+      AsyncStorage.setItem("personalNotif", String(idsString));
+      return idsString;
     });
   }
 
-  async function increaseGroup() {
+  async function increaseGroup(chatId: number) {
     console.log("g notif is set")
-    setGroupChatNotificationsQ((prev) => {
-      const next = prev + 1;
+    setGroupChatNotifications((prev) => {
+      const idsString = prev != ""
+        ? prev + " " + String(chatId)
+        : String(chatId)
 
-      AsyncStorage.setItem("groupNotifQ", String(next));
+      AsyncStorage.setItem("groupNotif", String(idsString));
 
-      return next;
+      return idsString;
+    });
+  }
+
+  async function decreasePersonal(chatId: number) {
+    console.log("p notif is dec")
+    setGroupChatNotifications((prev) => {
+      console.log("prev:", prev)
+      const idsString = prev.split(" ").filter(id => {return id !== String(chatId)}).join(" ")
+      AsyncStorage.setItem("personalNotif", idsString ? String(idsString) : "");
+      console.log("idsString", idsString)
+      return idsString;
+    });
+  }
+
+  async function decreaseGroup(chatId: number) {
+    console.log("g notif is dec")
+    setGroupChatNotifications((prev) => {
+      console.log("prev:", prev)
+      const idsString = prev.split(" ").filter(id => {return id !== String(chatId)}).join(" ")
+
+      AsyncStorage.setItem("groupNotif", idsString ? String(idsString) : "");
+      console.log("idsString", idsString)
+      return idsString;
     });
   }
 
@@ -43,9 +71,9 @@ export function NotificationProvider({ children }: PropsWithChildren) {
     function handleGetNotification(chat: ChatWithChatParticipantsDto) {
         console.log("emit is here")
         if (chat.is_group) {
-        increaseGroup();
+        increaseGroup(chat.id);
       } else {
-        increasePersonal();
+        increasePersonal(chat.id);
       }
     }
 
@@ -59,24 +87,29 @@ export function NotificationProvider({ children }: PropsWithChildren) {
   useEffect(() => {
     async function loadNotifications() {
         const [personal, group] = await Promise.all([
-        AsyncStorage.getItem("personalNotifQ"),
-        AsyncStorage.getItem("groupNotifQ"),
+          AsyncStorage.getItem("personalNotif"),
+          AsyncStorage.getItem("groupNotif"), 
         ]);
 
-        setPersonalChatNotificationsQ(Number(personal ?? 0));
-        setGroupChatNotificationsQ(Number(group ?? 0));
+        setPersonalChatNotifications(personal ?? "");
+        setGroupChatNotifications(group ?? "");
+        console.log("Nnotifs from storage", personal, group)
     }
 
     loadNotifications();
+
     }, []);
 
+  
   return (
     <NotificationContext
       value={{
-        personalChatNotificationsQ,
-        groupChatNotificationsQ,
+        personalChatNotifications,
+        groupChatNotifications,
         increasePersonal,
         increaseGroup,
+        decreasePersonal,
+        decreaseGroup
       }}
     >
       {children}

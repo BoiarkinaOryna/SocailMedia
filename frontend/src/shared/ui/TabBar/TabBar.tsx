@@ -5,19 +5,31 @@ import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import { useRoute } from "@react-navigation/native";
 import { useNotificationContext } from "@modules/chats/context/notification.context";
+import { Notification } from "../Notification/Notification";
 
 export function TabBar(){
     const [ currentPage, setCurrentPage ] = useState<string | null>(null)
     const route = useRoute()
     const routeName = route.name
 
-    const {personalChatNotificationsQ, groupChatNotificationsQ} = useNotificationContext()
+    const {personalChatNotifications, groupChatNotifications} = useNotificationContext()
     const [notifQuantity, setNotifQuantity] = useState<number | null>(null)
 
     useEffect(() => {
-        setNotifQuantity(personalChatNotificationsQ + groupChatNotificationsQ)
+        const p = personalChatNotifications
+            ? personalChatNotifications.split(" ").length
+            : 0
+        const g =groupChatNotifications
+            ? groupChatNotifications.split(" ").length
+            : 0
+        setNotifQuantity(p + g)
+        console.log(
+            "personalChatNotifications", personalChatNotifications, p,
+            "groupChatNotifications", groupChatNotifications, g,
+            "notifQuantity", notifQuantity,
+        )
 
-    }, [personalChatNotificationsQ, groupChatNotificationsQ])
+    }, [personalChatNotifications, groupChatNotifications])
 
     useEffect(() => {
             if (
@@ -65,10 +77,11 @@ export function TabBar(){
 
                 </Pressable>
                 <Pressable onPress={() => router.push("/chats")} style={[styles.links, currentPage === "chats" && styles.selected]} >
-                    <ICONS.SvgChat/>
-                    <View style={styles.notification}>
-                        <Text style={styles.notifText}>{notifQuantity}</Text>
+                    <View>
+                        <ICONS.SvgChat/>
+                        <Notification quantity={notifQuantity}/>
                     </View>
+
                     <Text style = {styles.h1}>Чати</Text>
 
                 </Pressable>

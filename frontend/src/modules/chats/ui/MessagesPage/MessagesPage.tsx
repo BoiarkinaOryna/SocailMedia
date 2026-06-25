@@ -11,6 +11,7 @@ import { Link } from "@shared/ui/Links/Links";
 import { styles } from "./messages.styles";
 import { API_BASE_URL } from "@shared/api/api";
 import { useNotificationContext } from "@modules/chats/context/notification.context";
+import { Notification } from "@shared/ui/Notification/Notification";
 
 const FALLBACK_AVATAR = require("@assets/LinaLi.jpg");
 
@@ -27,7 +28,7 @@ export function MessagesPage() {
   const { token, user } = useUserContext();
   const { data, isLoading } = useGetMyChatsQuery(token ?? skipToken);
 
-  const {personalChatNotificationsQ} = useNotificationContext()
+  const {personalChatNotifications} = useNotificationContext()
   
 
   const chats = data?.personal ?? [];
@@ -55,9 +56,11 @@ export function MessagesPage() {
           <View style={styles.titleRow}>
             <View style={styles.titleIconWrap}>
               <ICONS.SvgChat />
-              <View style={styles.notification}>
-                  <Text style={styles.notifText}>{personalChatNotificationsQ}</Text>
-              </View>
+              <Notification quantity={
+                personalChatNotifications
+                ? personalChatNotifications.split(" ").length
+                : 0
+              } />
             </View>
             <Text style={styles.title}>Повідомлення</Text>
           </View>

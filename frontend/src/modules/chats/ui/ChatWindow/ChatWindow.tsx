@@ -12,6 +12,8 @@ import { useLazyGetChatInfoQuery } from "@modules/chats/api/chat.api";
 import { API_BASE_URL } from "@shared/api/api";
 import { GroupOptionsModal } from "../GroupModals/GroupOptionsModal/GroupOptionsModal";
 import * as ImagePicker from "expo-image-picker";
+import { useNotificationContext } from "@modules/chats/context/notification.context";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 
@@ -26,10 +28,11 @@ export function ChatWindow(params: {chatId: number}) {
   const [text, setText] = useState("");
 
 
+  const {decreaseGroup, decreasePersonal} = useNotificationContext()
   const { token, user } = useUserContext()
+
   if (!user || !token) return
   const { chatId } = params
-
 
   const handleSend = () => {
     if (!text.trim()) return;
@@ -43,18 +46,6 @@ export function ChatWindow(params: {chatId: number}) {
 
   };
 
-  // useEffect(() => {
-  //   if (text !== "") return
-  //   ClientSocket.emit(
-  //     "notification",
-  //     {chatId},
-  //     (response: any) => {
-  //       if (response?.status === "error") {
-  //         console.log("notification message error:", response.message);
-  //       }
-  //     },
-  //   );
-  // }, [text])
 
   const handlePickAndSendPhoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
@@ -87,7 +78,6 @@ export function ChatWindow(params: {chatId: number}) {
 
   const getImageUrl = (img: string) => {
       const uri = `${API_BASE_URL}/uploads/${img}`
-      console.log("uri", uri)
       return uri
   }
 
@@ -135,6 +125,15 @@ export function ChatWindow(params: {chatId: number}) {
     );
 
     setChatMessages(data.chat_app_message);
+
+    if (data.is_group){
+      console.log("decreasing group")
+      decreaseGroup(data.id)
+    } else {
+      console.log("decreasing personal")
+      decreasePersonal(data.id)
+    }
+
   }, [data, user.id]);
 
   useEffect(() => {

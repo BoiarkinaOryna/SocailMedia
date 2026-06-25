@@ -26,9 +26,10 @@ export type Post = {
 };
 
 export type CreatePost = {
-  links?: string;
+  links?: string[];
   title: string;
   topic: string;
   content: string;
   image?: string | null;
+  images?: string[];
 };

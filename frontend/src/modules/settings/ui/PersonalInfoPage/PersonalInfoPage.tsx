@@ -31,7 +31,6 @@ export function PersonalInfoPage(){
     
     const getImageUrl = (img: string) => {
         const uri = `${API_BASE_URL}/uploads/${img}`
-        console.log("uri", uri)
         return uri
     }
     useEffect(() => {

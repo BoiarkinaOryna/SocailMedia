@@ -3,11 +3,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 export async function getPersonalChatNotifications(){
-    const personalNotifQ = await AsyncStorage.getItem("personalNotifQ")
-    return personalNotifQ
+    const personalNotif = await AsyncStorage.getItem("personalNotif")
+    return personalNotif
 }
 
 export async function getGroupChatNotifications(){
-    const groupNotifQ = await AsyncStorage.getItem("groupNotifQ")
-    return groupNotifQ
+    const groupNotif = await AsyncStorage.getItem("groupNotif")
+    return groupNotif
 }

@@ -97,6 +97,17 @@ export const styles = StyleSheet.create({
     borderRadius: 17,
     alignItems: "center",
   },
+  previewGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+    marginTop: 15,
+  },
+  previewImage: {
+    width: "48%",
+    height: 150,
+    borderRadius: 16,
+  },
   footer: {
     flexDirection: "row",
     justifyContent: "space-between",

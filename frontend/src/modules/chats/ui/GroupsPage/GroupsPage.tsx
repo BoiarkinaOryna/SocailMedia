@@ -10,6 +10,7 @@ import { Link } from "@shared/ui/Links/Links";
 
 import { styles } from "./groups.styles";
 import { API_BASE_URL } from "@shared/api/api";
+import { COLORS } from "@shared/constants/colors";
 
 export function GroupsPage() {
   const [search, setSearch] = useState("");
@@ -38,9 +39,7 @@ export function GroupsPage() {
           <View style={styles.titleRow}>
             <View style={styles.titleIconWrap}>
               <ICONS.SvgChat />
-              <View style={styles.badge}>
-                <Text style={styles.badgeText}>{groups.length}</Text>
-              </View>
+              
             </View>
             <Text style={styles.title}>Групові чати</Text>
           </View>
@@ -53,7 +52,7 @@ export function GroupsPage() {
               value={search}
               onChangeText={setSearch}
               placeholder="Пошук"
-              placeholderTextColor="#8F90A6"
+              placeholderTextColor={COLORS.background}
               style={styles.searchInput}
             />
           </View>

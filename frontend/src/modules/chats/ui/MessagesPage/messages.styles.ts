@@ -38,24 +38,24 @@ export const styles = StyleSheet.create({
   titleIconWrap: {
     position: "relative",
   },
-  notification: {
-      position: "absolute",
-      alignItems: "center",
-      justifyContent: "center",
-      top: 5,
-      right: 30,
-      width: 15,
-      height: 15,
-      backgroundColor: COLORS.red,
-      borderRadius: 12,
-      borderWidth: 1,
-      borderColor: COLORS.white
-  },
-  notifText: {
-      fontSize: 8,
-      fontWeight: 800,
-      color: COLORS.white
-  },
+  // notification: {
+  //     position: "absolute",
+  //     alignItems: "center",
+  //     justifyContent: "center",
+  //     top: 5,
+  //     right: 30,
+  //     width: 15,
+  //     height: 15,
+  //     backgroundColor: COLORS.red,
+  //     borderRadius: 12,
+  //     borderWidth: 1,
+  //     borderColor: COLORS.white
+  // },
+  // notifText: {
+  //     fontSize: 8,
+  //     fontWeight: 800,
+  //     color: COLORS.white
+  // },
   title: {
     fontSize: 16,
     fontWeight: "500",

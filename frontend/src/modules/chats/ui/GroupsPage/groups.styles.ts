@@ -37,23 +37,6 @@ export const styles = StyleSheet.create({
   titleIconWrap: {
     position: "relative",
   },
-  badge: {
-    position: "absolute",
-    top: -6,
-    right: -6,
-    minWidth: 14,
-    height: 14,
-    borderRadius: 7,
-    backgroundColor: "#FF4C4C",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 3,
-  },
-  badgeText: {
-    fontSize: 9,
-    color: COLORS.white,
-    fontWeight: "700",
-  },
   title: {
     fontSize: 16,
     fontWeight: "500",

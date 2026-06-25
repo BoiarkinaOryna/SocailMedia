@@ -1,4 +1,4 @@
-import { RefreshControl, ScrollView, View } from "react-native";
+import { RefreshControl, ScrollView } from "react-native";
 import { styles } from "./my-publications.styles";
 import { PublicationCard } from "../PublicationCard/PublicationCard";
 import { useUserContext } from "@modules/auth/context/user.context";
@@ -13,18 +13,26 @@ export function MyPublicationsPage() {
   const [take, setTake] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
 
-  const { data, refetch } = useGetMyPostsQuery({
-    token: token!,
-    take: take,
-    page: page,
-  });
+  const { data, refetch, error } = useGetMyPostsQuery(
+    {
+      token: token ?? "",
+      take: take,
+      page: page,
+    },
+    { skip: !token }
+  );
 
   const onRefresh = useCallback(async () => {
+    if (!token) return;
     setLoading(true);
     await refetch();
     setLoading(false);
     console.log("my posts is refreshed");
-  }, [refetch]);
+  }, [refetch, token]);
+
+  if (error) {
+    console.log("my posts error", error);
+  }
 
   return (
     <ScrollView

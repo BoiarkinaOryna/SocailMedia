@@ -15,8 +15,7 @@ interface PublicationCardProps {
 export function PublicationCard({ publication }: PublicationCardProps) {
   console.log("POST", JSON.stringify(publication, null, 2));
 
-  const image = publication.images?.[0] ?? publication.post_app_postimage?.[0];
-  const imageName = image?.original_image ?? image?.compressed_image;
+  const images = publication.images ?? publication.post_app_postimage ?? [];
   const links = publication.links ?? publication.post_app_postlink;
 
   return (
@@ -43,19 +42,25 @@ export function PublicationCard({ publication }: PublicationCardProps) {
 
         <Text style={styles.content}>{publication.content}</Text>
 
-        {imageName && (
-          <Image
-            source={{
-              uri: `${API_BASE_URL}/uploads/${imageName}`,
-            }}
-            style={{
-              width: "100%",
-              height: 240,
-              borderRadius: 16,
-              marginTop: 12,
-            }}
-            contentFit="cover"
-          />
+        {!!images.length && (
+          <View style={styles.imageGrid}>
+            {images.map((image, index) => {
+              const imageName = image.original_image ?? image.compressed_image;
+
+              if (!imageName) return null;
+
+              return (
+                <Image
+                  key={image.id ?? `${imageName}-${index}`}
+                  source={{
+                    uri: `${API_BASE_URL}/uploads/${imageName}`,
+                  }}
+                  style={styles.postImage}
+                  contentFit="cover"
+                />
+              );
+            })}
+          </View>
         )}
 
         {!!links?.length && (

@@ -60,12 +60,14 @@ export const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.pulm,
   },
-  imagesRow: {
+  imageGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     gap: 12,
   },
   postImage: {
-    width: 220,
-    height: 220,
+    width: "48%",
+    height: 180,
     borderRadius: 16,
     backgroundColor: COLORS.blue10,
   },

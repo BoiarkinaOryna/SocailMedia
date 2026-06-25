@@ -11,15 +11,9 @@ import { Button } from "@shared/ui/Button/Button";
 import { Input } from "@shared/ui/Input/Input";
 
 import { usePublicationModal } from "@modules/publication/context/modal.context";
-
 import { publicationValidator } from "@modules/publication/models/publication.validation";
-
 import { PublicationSchema } from "@modules/publication/types/publication.types";
-
-import {
-  useCreatePostMutation,
-} from "@modules/publication/api/posts.api";
-
+import { useCreatePostMutation } from "@modules/publication/api/posts.api";
 import { useUserContext } from "@modules/auth/context/user.context";
 
 import { styles } from "./create-publication-modal.styles";
@@ -41,19 +35,15 @@ const DEFAULT_VALUES: PublicationSchema = {
   title: "",
   topic: "",
   content: "",
-  links: "",
+  links: [""],
 };
 
 export function CreatePublicationModal() {
   const { isOpen, close } = usePublicationModal();
-
   const { token } = useUserContext();
-
   const [createPostMutation] = useCreatePostMutation();
-
-  const [selectedImage, setSelectedImage] = useState<string | null>(null);
-
-  const [imageBase64, setImageBase64] = useState<string | null>(null);
+  const [selectedImages, setSelectedImages] = useState<string[]>([]);
+  const [imageBase64List, setImageBase64List] = useState<string[]>([]);
 
   const { handleSubmit, control, watch, setValue, reset } =
     useForm<PublicationSchema>({
@@ -63,10 +53,10 @@ export function CreatePublicationModal() {
     });
 
   const contentValue = watch("content") ?? "";
+  const linkValues = watch("links") ?? [""];
 
   function addTagToContent(tag: string) {
     const currentContent = contentValue;
-
     const tagWithSpace = `${tag} `;
 
     if (!currentContent.includes(tag)) {
@@ -77,21 +67,26 @@ export function CreatePublicationModal() {
     }
   }
 
+  function addLinkInput() {
+    setValue("links", [...linkValues, ""], { shouldValidate: true });
+  }
+
   async function pickImage() {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
+      allowsMultipleSelection: true,
       quality: 0.7,
       base64: true,
     });
 
     if (!result.canceled) {
-      const asset = result.assets[0];
+      const uris = result.assets.map((asset) => asset.uri).filter(Boolean);
+      const base64Images = result.assets
+        .map((asset) => asset.base64)
+        .filter((image): image is string => Boolean(image));
 
-      setSelectedImage(asset.uri);
-
-      if (asset.base64) {
-        setImageBase64(asset.base64);
-      }
+      setSelectedImages((current) => [...current, ...uris]);
+      setImageBase64List((current) => [...current, ...base64Images]);
     }
   }
 
@@ -99,7 +94,6 @@ export function CreatePublicationModal() {
     try {
       if (!token) {
         router.push("/auth");
-
         return;
       }
 
@@ -110,18 +104,14 @@ export function CreatePublicationModal() {
           topic: data.topic,
           content: data.content,
           links: data.links,
-          image: imageBase64,
+          images: imageBase64List,
         },
       }).unwrap();
 
       reset(DEFAULT_VALUES);
-
-      setSelectedImage(null);
-
-      setImageBase64(null);
-
+      setSelectedImages([]);
+      setImageBase64List([]);
       close();
-
       router.push("/(publications)/publications");
     } catch (error) {
       console.log("create post error", error);
@@ -213,43 +203,49 @@ export function CreatePublicationModal() {
                 )}
               />
 
-              <Controller
-                name="links"
-                control={control}
-                render={({ field, fieldState }) => (
-                  <View style={styles.linkBlock}>
-                    <Text style={styles.darkLabel}>Посилання</Text>
+              <View style={styles.linkBlock}>
+                <Text style={styles.darkLabel}>Посилання</Text>
 
-                    <View style={styles.linkSection}>
-                      <View style={styles.linkInputWrapper}>
-                        <Input
-                          placeholder="Ваше посилання"
-                          onChangeText={field.onChange}
-                          value={field.value}
-                          error={fieldState.error?.message}
-                        />
+                {linkValues.map((_, index) => (
+                  <Controller
+                    key={index}
+                    name={`links.${index}`}
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <View style={styles.linkSection}>
+                        <View style={styles.linkInputWrapper}>
+                          <Input
+                            placeholder="Ваше посилання"
+                            onChangeText={field.onChange}
+                            value={field.value}
+                            error={fieldState.error?.message}
+                          />
+                        </View>
+
+                        {index === linkValues.length - 1 && (
+                          <Button
+                            icon={<ICONS.SvgPlusB />}
+                            style={styles.linkPlusButton}
+                            onPress={addLinkInput}
+                          />
+                        )}
                       </View>
+                    )}
+                  />
+                ))}
+              </View>
 
-                      <Button
-                        icon={<ICONS.SvgPlusB />}
-                        style={styles.linkPlusButton}
-                      />
-                    </View>
-                  </View>
-                )}
-              />
-
-              {selectedImage && (
-                <Image
-                  source={{ uri: selectedImage }}
-                  style={{
-                    width: "100%",
-                    height: 220,
-                    borderRadius: 16,
-                    marginTop: 15,
-                  }}
-                  contentFit="cover"
-                />
+              {!!selectedImages.length && (
+                <View style={styles.previewGrid}>
+                  {selectedImages.map((imageUri, index) => (
+                    <Image
+                      key={`${imageUri}-${index}`}
+                      source={{ uri: imageUri }}
+                      style={styles.previewImage}
+                      contentFit="cover"
+                    />
+                  ))}
+                </View>
               )}
             </View>
           </ScrollView>

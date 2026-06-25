@@ -24,7 +24,8 @@ export const postsApi = baseApi.injectEndpoints({
         },
         body: {
           ...data,
-          links: data.links?.trim() ? [data.links.trim()] : [],
+          links: data.links?.map((link) => link.trim()).filter(Boolean) ?? [],
+          images: data.images?.filter(Boolean) ?? [],
         },
       }),
       invalidatesTags: ["Posts"],

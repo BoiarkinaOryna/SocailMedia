@@ -11,18 +11,26 @@ export function AllPublications() {
   const [take, setTake] = useState<number>(10);
   const [page, setPage] = useState<number>(1);
 
-  const { data, refetch } = useGetAllPostsQuery({
-    token: token!,
-    take: take,
-    page: page,
-  });
+  const { data, refetch, error } = useGetAllPostsQuery(
+    {
+      token: token ?? "",
+      take: take,
+      page: page,
+    },
+    { skip: !token }
+  );
 
   const onRefresh = useCallback(async () => {
+    if (!token) return;
     setLoading(true);
     await refetch();
     setLoading(false);
     console.log("all posts is refreshed");
-  }, [refetch]);
+  }, [refetch, token]);
+
+  if (error) {
+    console.log("all posts error", error);
+  }
 
   return (
     <ScrollView
